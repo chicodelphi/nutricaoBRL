@@ -1,0 +1,7 @@
+{
+  "name": "NutriAppBR AI",
+  "description": "Seu nutricionista inteligente pessoal. Crie dietas, analise pratos por fotos e acompanhe sua saúde com IA.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
