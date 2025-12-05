@@ -1,10 +1,14 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserProfile, DietPlan, MealAnalysis } from "../types";
 
-// Declaração para evitar erro TS2580 (Cannot find name 'process')
-declare const process: any;
+// A API KEY AGORA VEM DO VITE (funciona no navegador + Vercel)
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+if (!apiKey) {
+  throw new Error("❌ ERRO: VITE_GEMINI_API_KEY não está definida. Adicione no Vercel Environment Variables.");
+}
+
+const ai = new GoogleGenAI({ apiKey });
 
 const SYSTEM_INSTRUCTION = `
 Você é o NutriAppBR AI, um nutricionista brasileiro experiente, amigável e motivador.
@@ -93,7 +97,6 @@ export const generateDietPlan = async (profile: UserProfile): Promise<DietPlan> 
 };
 
 export const analyzeFoodImage = async (base64Image: string, isVegan: boolean): Promise<MealAnalysis> => {
-  // Remove header if present
   const cleanBase64 = base64Image.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
 
   const response = await ai.models.generateContent({
@@ -120,11 +123,11 @@ export const analyzeFoodImage = async (base64Image: string, isVegan: boolean): P
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          foodName: { type: Type.STRING, description: "Nome curto do prato principal ou alimentos" },
+          foodName: { type: Type.STRING },
           calories: { type: Type.NUMBER },
-          protein: { type: Type.NUMBER, description: "gramas" },
-          carbs: { type: Type.NUMBER, description: "gramas" },
-          fats: { type: Type.NUMBER, description: "gramas" },
+          protein: { type: Type.NUMBER },
+          carbs: { type: Type.NUMBER },
+          fats: { type: Type.NUMBER },
           healthScore: { type: Type.NUMBER },
           feedback: { type: Type.STRING }
         }
